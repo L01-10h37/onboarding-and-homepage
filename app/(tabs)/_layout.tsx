@@ -68,7 +68,10 @@ export default function RootLayout() {
         },
         headerTitleStyle: {
           color: "#FFFFFF",
-          fontWeight: "bold",
+          fontFamily: "Montserrat-Bold",
+        },
+        tabBarLabelStyle: {
+          fontFamily: "Montserrat-Medium",
         },
       }}>
       {/* Trang chủ: Dashboard Robot */}
