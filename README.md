@@ -71,6 +71,7 @@ Run only onboarding test file:
 npm test -- OnboardingScreen.test.tsx
 ```
 
-Current onboarding test file:
+Current test files:
 
-- `app/(tabs)/OnboardingScreen.test.tsx`
+- `app/__test__/OnboardingScreen.test.tsx`
+- `app/__test__/HomeScreen.test.tsx`
