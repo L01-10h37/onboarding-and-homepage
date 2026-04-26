@@ -73,5 +73,8 @@ npm test -- OnboardingScreen.test.tsx
 
 Current test files:
 
-- `app/__test__/OnboardingScreen.test.tsx`
-- `app/__test__/HomeScreen.test.tsx`
+- `__test__/OnboardingScreen.test.tsx`
+- `__test__/HomeScreen.test.tsx`
+
+Badge:
+[![SonarCloud](https://github.com/L01-10h37/onboarding-and-homepage/actions/workflows/test.yml/badge.svg)](https://github.com/L01-10h37/onboarding-and-homepage/actions/workflows/test.yml)
