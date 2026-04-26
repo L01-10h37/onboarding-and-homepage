@@ -2,7 +2,7 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 
-import HomeScreen from "./index";
+import HomeScreen from "../app/(tabs)/index";
 
 jest.mock("@expo/vector-icons", () => {
     const ReactLib = require("react");
