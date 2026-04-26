@@ -1,9 +1,11 @@
-import React from "react";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useRef, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
@@ -44,7 +46,7 @@ const slides: SlideItem[] = [
     image: require("@/assets/images/screen3.png"),
     backgroundColor: "#DAF2DB",
   },
-    {
+  {
     key: "s4",
     title: "Đánh giá & tin cậy",
     text: "Xem nhận xét và đánh giá chân thực từ các sinh viên khác để chọn món ăn phù hợp. Không còn phải tìm kiếm thông tin rời rạc trên mạng xã hội.",
@@ -54,6 +56,19 @@ const slides: SlideItem[] = [
 ];
 
 const OnboardingScreen: React.FC<OnboardingProps> = ({ onDone }) => {
+  const sliderRef = useRef<AppIntroSlider<SlideItem> | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const isLastSlide = activeIndex === slides.length - 1;
+
+  const handleNextOrDone = () => {
+    if (isLastSlide) {
+      onDone();
+      return;
+    }
+    sliderRef.current?.goToSlide(activeIndex + 1, true);
+  };
+
   const renderItem = ({ item }: { item: SlideItem }) => (
     <View style={[styles.slide, { backgroundColor: item.backgroundColor }]}>
       <Text style={styles.title}>{item.title}</Text>
@@ -64,12 +79,34 @@ const OnboardingScreen: React.FC<OnboardingProps> = ({ onDone }) => {
 
   return (
     <AppIntroSlider
+      ref={sliderRef}
       renderItem={renderItem}
       data={slides}
       onDone={onDone}
-      showSkipButton={true}
-      onSkip={onDone}
-      bottomButton
+      onSlideChange={(index) => setActiveIndex(index)}
+      renderPagination={() => (
+        <View pointerEvents="box-none" style={styles.paginationOverlay}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.skipButton}
+            onPress={onDone}
+          >
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.fabButton}
+            onPress={handleNextOrDone}
+          >
+            <Ionicons
+              name={isLastSlide ? "checkmark" : "arrow-forward"}
+              size={24}
+              color="#FFFFFF"
+            />
+          </TouchableOpacity>
+        </View>
+      )}
     />
   );
 };
@@ -99,5 +136,39 @@ const styles = StyleSheet.create({
     color: "#3E8C55",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  paginationOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  skipButton: {
+    position: "absolute",
+    top: 52,
+    left: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  skipText: {
+    fontSize: 16,
+    color: "#4A4A4A",
+    fontWeight: "600",
+  },
+  fabButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#238C48",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    bottom: 34,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    elevation: 6,
   },
 });

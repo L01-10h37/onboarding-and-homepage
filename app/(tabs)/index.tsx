@@ -1,12 +1,7 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
-import React from "react";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  Alert,
-  DevSettings,
   Dimensions,
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,176 +11,154 @@ import {
 } from "react-native";
 
 const { width } = Dimensions.get("window");
+const CARD_WIDTH = (width - 52) / 2;
 
-// Dữ liệu giả lập cho danh mục và sản phẩm
-const CATEGORIES = ["Tất cả", "Áo khoác", "Giày dép", "Phụ kiện", "Đồ điện tử"];
-const PRODUCTS = [
+const CATEGORIES = [
+  { id: "all", label: "Tất cả", icon: "🍽️" },
+  { id: "rice", label: "Cơm", icon: "🍚" },
+  { id: "pho", label: "Phở", icon: "🍜" },
+  { id: "bun", label: "Bánh", icon: "🥟" },
+  { id: "drink", label: "Giải khát", icon: "🥤" },
+];
+
+const POPULAR_FOODS = [
   {
     id: "1",
-    name: "Áo Hoodie Modern",
-    price: "450.000đ",
+    name: "Cơm gà xối mỡ",
+    subtitle: "Cơm gà Nguyên Ký",
+    rating: "4.8",
+    time: "10 - 15p",
+    price: "50.000đ",
     image:
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=1000&auto=format&fit=crop",
+      "https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/2023_12_6_638374928096209198_com-ga-xoi-mo-bao-nhieu-calo.jpg",
   },
   {
     id: "2",
-    name: "Giày Sneaker White",
-    price: "1.200.000đ",
+    name: "Bún bò Huế",
+    subtitle: "Bún bò Huế Duy Bảo",
+    rating: "4.5",
+    time: "13 - 15p",
+    price: "45.000đ",
     image:
-      "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1000&auto=format&fit=crop",
+      "https://file.hstatic.net/200000700229/article/bun-bo-hue-1_da318989e7c2493f9e2c3e010e722466.jpg",
   },
   {
     id: "3",
-    name: "Đồng hồ Minimalist",
-    price: "850.000đ",
+    name: "Bún riêu cua",
+    subtitle: "Bún riêu Minh Nhựt",
+    rating: "4.5",
+    time: "13 - 15p",
+    price: "43.000đ",
     image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop",
+      "https://i-giadinh.vnecdn.net/2024/02/22/Bc8Thnhphm18-1708574950-2889-1708574962.jpg",
   },
   {
     id: "4",
-    name: "Balo Du lịch",
-    price: "600.000đ",
+    name: "Mì cay 7 cấp độ",
+    subtitle: "Mì cay Seoul",
+    rating: "4.9",
+    time: "15 - 20p",
+    price: "60.000đ",
     image:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=1000&auto=format&fit=crop",
+      "https://static.vinwonders.com/production/mi-cay-quy-nhon-1.jpg",
   },
 ];
 
-export default function ShopHomeScreen() {
-  const clearOnboarding = async () => {
-    try {
-      await SecureStore.deleteItemAsync("has_launched");
-
-      const msg =
-        "Đã xóa lưu trữ. Vui lòng tải lại ứng dụng (refresh) để xem lại màn hình chào mừng (Onboarding).";
-      if (Platform.OS === "web") {
-        window.alert(msg);
-        window.location.reload(); // Tự động F5 trên web
-      } else {
-        Alert.alert("Thành công", msg, [
-          {
-            text: "Khởi động lại ngay",
-            onPress: () => {
-              if (__DEV__) {
-                DevSettings.reload();
-              } else {
-                Alert.alert("Hãy đóng hẳn app và mở lại.");
-              }
-            },
-          },
-          { text: "Để sau", style: "cancel" },
-        ]);
-      }
-    } catch (e) {
-      console.error("Lỗi khi xóa SecureStore", e);
-      if (Platform.OS === "web") window.alert("Lỗi khi xóa: " + e);
-      else Alert.alert("Lỗi", "Không thể xóa lưu trữ");
-    }
-  };
-
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      {/* 1. Header & Thanh tìm kiếm */}
-      <View style={styles.header}>
-        <View style={styles.topRow}>
-          <View>
-            <Text style={styles.welcomeText}>Chào buổi sáng,</Text>
-            <Text style={styles.userName}>người dùng 67</Text>
-          </View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={clearOnboarding}
-              style={{
-                marginRight: 15,
-                padding: 8,
-                backgroundColor: "#F0F0F0",
-                borderRadius: 12,
-              }}
-            >
-              <MaterialCommunityIcons name="refresh" size={26} color="#000" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cartBtn}>
-              <MaterialCommunityIcons
-                name="cart-outline"
-                size={26}
-                color="#000"
-              />
-              <View style={styles.cartBadge} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
+      >
         <View style={styles.searchBar}>
-          <MaterialCommunityIcons name="magnify" size={22} color="#999" />
+          <Ionicons name="search" size={24} color="#1A1A1A" />
           <TextInput
-            placeholder="Tìm kiếm sản phẩm..."
+            placeholder="Tìm kiếm món ăn, quán ăn,..."
+            placeholderTextColor="#7A7A7A"
             style={styles.searchInput}
           />
         </View>
-      </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* 2. Banner Khuyến mãi */}
-        <View style={styles.bannerContainer}>
-          <View style={styles.bannerContent}>
-            <Text style={styles.bannerTitle}>Giảm giá 30%</Text>
-            <Text style={styles.bannerSub}>Cho bộ sưu tập mùa hè mới nhất</Text>
-            <TouchableOpacity style={styles.bannerBtn}>
-              <Text style={styles.bannerBtnText}>Mua ngay</Text>
-            </TouchableOpacity>
-          </View>
-          <Image
-            source={{
-              uri: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format&fit=crop",
-            }}
-            style={styles.bannerImg}
-          />
-        </View>
-
-        {/* 3. Danh mục (Categories) */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Danh mục</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAll}>Xem tất cả</Text>
-          </TouchableOpacity>
-        </View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoryList}
         >
-          {CATEGORIES.map((cat, index) => (
+          {CATEGORIES.map((category, index) => (
             <TouchableOpacity
-              key={index}
+              key={category.id}
+              activeOpacity={0.8}
               style={[
-                styles.categoryBtn,
-                index === 0 && styles.categoryBtnActive,
+                styles.categoryChip,
+                index === 0 ? styles.categoryChipActive : null,
               ]}
             >
+              <Text style={styles.categoryIcon}>{category.icon}</Text>
               <Text
                 style={[
-                  styles.categoryText,
-                  index === 0 && styles.categoryTextActive,
+                  styles.categoryLabel,
+                  index === 0 ? styles.categoryLabelActive : null,
                 ]}
               >
-                {cat}
+                {category.label}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* 4. Danh sách sản phẩm (Grid) */}
-        <View style={styles.productGrid}>
-          {PRODUCTS.map((item) => (
-            <TouchableOpacity key={item.id} style={styles.productCard}>
-              <Image source={{ uri: item.image }} style={styles.productImage} />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName} numberOfLines={1}>
-                  {item.name}
+        <View style={styles.discountCard}>
+          <View>
+            <Text style={styles.discountTitle}>Giảm giá 50%</Text>
+            <Text style={styles.discountSub}>
+              Cho đơn hàng đầu tiên của bạn
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.orderNowButton} activeOpacity={0.9}>
+            <Text style={styles.orderNowText}>Đặt ngay</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Món ăn phổ biến</Text>
+          <TouchableOpacity activeOpacity={0.8}>
+            <Text style={styles.seeAll}>Xem tất cả</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.grid}>
+          {POPULAR_FOODS.map((food) => (
+            <TouchableOpacity
+              key={food.id}
+              style={styles.card}
+              activeOpacity={0.9}
+            >
+              <Image source={{ uri: food.image }} style={styles.cardImage} />
+              <View style={styles.cardBody}>
+                <Text style={styles.cardTitle} numberOfLines={1}>
+                  {food.name}
                 </Text>
-                <Text style={styles.productPrice}>{item.price}</Text>
-                <TouchableOpacity style={styles.addBtn}>
-                  <MaterialCommunityIcons name="plus" size={20} color="#fff" />
-                </TouchableOpacity>
+                <Text style={styles.cardSubtitle} numberOfLines={1}>
+                  {food.subtitle}
+                </Text>
+
+                <View style={styles.metaRow}>
+                  <MaterialCommunityIcons
+                    name="star"
+                    size={16}
+                    color="#F7B500"
+                  />
+                  <Text style={styles.metaText}>{food.rating}</Text>
+                  <MaterialCommunityIcons
+                    name="clock-outline"
+                    size={16}
+                    color="#555"
+                    style={styles.clockIcon}
+                  />
+                  <Text style={styles.metaText}>{food.time}</Text>
+                </View>
+
+                <Text style={styles.price}>{food.price}</Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -196,125 +169,161 @@ export default function ShopHomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F8F9FB" },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: "#fff",
+  container: {
+    flex: 1,
+    backgroundColor: "#CFE9D7",
   },
-  topRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
+  contentContainer: {
+    paddingHorizontal: 14,
+    paddingTop: 54,
+    paddingBottom: 28,
   },
-  welcomeText: { fontSize: 14, color: "#888" },
-  userName: { fontSize: 20, fontWeight: "bold", color: "#000" },
-  cartBtn: { padding: 8, backgroundColor: "#F0F0F0", borderRadius: 12 },
-  cartBadge: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 10,
-    height: 10,
-    backgroundColor: "#FF4757",
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-
   searchBar: {
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#F6F6F6",
+    paddingHorizontal: 18,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F1F2F6",
-    paddingHorizontal: 15,
-    borderRadius: 15,
-    height: 50,
   },
-  searchInput: { flex: 1, marginLeft: 10, fontSize: 16 },
-
-  bannerContainer: {
-    margin: 20,
-    height: 160,
-    borderRadius: 20,
-    overflow: "hidden",
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    marginLeft: 10,
+    color: "#1A1A1A",
+    fontFamily: "Montserrat-Medium",
+  },
+  categoryList: {
+    paddingTop: 14,
+    paddingBottom: 8,
+    paddingRight: 10,
+  },
+  categoryChip: {
+    backgroundColor: "#F4F6F1",
+    borderRadius: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginRight: 10,
     flexDirection: "row",
-    backgroundColor: "#000",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#DDE3DB",
   },
-  bannerContent: { flex: 1, padding: 20, justifyContent: "center", zIndex: 1 },
-  bannerTitle: { color: "#fff", fontSize: 22, fontWeight: "bold" },
-  bannerSub: { color: "#ddd", fontSize: 12, marginVertical: 8 },
-  bannerBtn: {
-    backgroundColor: "#fff",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    alignSelf: "flex-start",
+  categoryChipActive: {
+    backgroundColor: "#EDEDE8",
   },
-  bannerBtnText: { fontWeight: "bold", fontSize: 12 },
-  bannerImg: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-    opacity: 0.6,
+  categoryIcon: {
+    fontSize: 14,
+    marginRight: 5,
   },
-
+  categoryLabel: {
+    color: "#4D4D4D",
+    fontSize: 15,
+    fontFamily: "Montserrat-SemiBold",
+  },
+  categoryLabelActive: {
+    color: "#444",
+  },
+  discountCard: {
+    marginTop: 4,
+    backgroundColor: "#1FAE3C",
+    borderRadius: 25,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  discountTitle: {
+    color: "#FFFFFF",
+    fontSize: 40 / 2,
+    fontFamily: "Montserrat-Bold",
+  },
+  discountSub: {
+    color: "#E8FFE8",
+    marginTop: 4,
+    fontSize: 10,
+    fontFamily: "Montserrat-Medium",
+  },
+  orderNowButton: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 999,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  orderNowText: {
+    color: "#16A937",
+    fontSize: 17,
+    fontFamily: "Montserrat-Bold",
+  },
   sectionHeader: {
+    marginTop: 18,
+    marginBottom: 12,
+    paddingHorizontal: 6,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginBottom: 15,
+    alignItems: "center",
   },
-  sectionTitle: { fontSize: 18, fontWeight: "bold" },
-  seeAll: { color: "#3395ff" },
-
-  categoryList: { paddingLeft: 20, marginBottom: 20 },
-  categoryBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: "#EEE",
+  sectionTitle: {
+    color: "#0F0F0F",
+    fontSize: 17,
+    fontFamily: "Montserrat-Bold",
   },
-  categoryBtnActive: { backgroundColor: "#000", borderColor: "#000" },
-  categoryText: { color: "#888", fontWeight: "500" },
-  categoryTextActive: { color: "#fff" },
-
-  productGrid: {
+  seeAll: {
+    color: "#3B9051",
+    fontSize: 17,
+    fontFamily: "Montserrat-Bold",
+  },
+  grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    paddingHorizontal: 15,
     justifyContent: "space-between",
+    rowGap: 14,
   },
-  productCard: {
-    width: (width - 45) / 2,
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    marginBottom: 15,
+  card: {
+    width: CARD_WIDTH,
+    borderRadius: 16,
     overflow: "hidden",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    backgroundColor: "#F4F4F2",
   },
-  productImage: { width: "100%", height: 180 },
-  productInfo: { padding: 12 },
-  productName: { fontSize: 14, fontWeight: "bold", color: "#333" },
-  productPrice: {
+  cardImage: {
+    width: "100%",
+    height: 100,
+  },
+  cardBody: {
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 10,
+  },
+  cardTitle: {
+    color: "#121212",
+    fontSize: 15,
+    fontFamily: "Montserrat-Bold",
+  },
+  cardSubtitle: {
+    color: "#7A7A7A",
+    marginTop: 3,
     fontSize: 14,
-    color: "#3395ff",
-    fontWeight: "700",
-    marginTop: 4,
+    fontFamily: "Montserrat-Regular",
   },
-  addBtn: {
-    position: "absolute",
-    right: 10,
-    bottom: 10,
-    backgroundColor: "#000",
-    borderRadius: 8,
-    padding: 4,
+  metaRow: {
+    marginTop: 6,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  metaText: {
+    marginLeft: 3,
+    color: "#4E4E4E",
+    fontSize: 14,
+    fontFamily: "Montserrat-Medium",
+  },
+  clockIcon: {
+    marginLeft: 10,
+  },
+  price: {
+    marginTop: 6,
+    color: "#0BAF29",
+    fontSize: 15,
+    fontFamily: "Montserrat-Bold",
   },
 });

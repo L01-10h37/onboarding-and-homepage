@@ -1,12 +1,17 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  styles,
+  tabBarLabelStyle,
+  tabBarStyle,
+} from "@/constants/tabs-layout-styles";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import OnboardingScreen from "./onboarding";
 
 const STORAGE_KEY = "has_launched";
-const PRIMARY_COLOR = "#00F0FF"; // Màu Neon Blue của Robot OS
+const PRIMARY_COLOR = "#1EA64A";
 
 export default function RootLayout() {
   // Onboarding logic: Kiểm tra lần đầu mở app và lưu trạng thái vào SecureStore
@@ -18,7 +23,7 @@ export default function RootLayout() {
       try {
         const value = await SecureStore.getItemAsync(STORAGE_KEY);
         setIsFirstLaunch(value === null);
-      } catch (error) {
+      } catch {
         setIsFirstLaunch(false);
       } finally {
         setIsLoading(false);
@@ -56,49 +61,30 @@ export default function RootLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: PRIMARY_COLOR,
-        tabBarInactiveTintColor: "#7f8c8d",
-        tabBarStyle: {
-          backgroundColor: "#16161E", // Dark surface
-          borderTopColor: "#252530",
-          height: 60,
-          paddingBottom: 8,
-        },
-        headerStyle: {
-          backgroundColor: "#0D0D12",
-        },
-        headerTitleStyle: {
-          color: "#FFFFFF",
-          fontFamily: "Montserrat-Bold",
-        },
-        tabBarLabelStyle: {
-          fontFamily: "Montserrat-Medium",
-        },
-      }}>
-      {/* Trang chủ: Dashboard Robot */}
+        tabBarInactiveTintColor: "#8C96A4",
+        tabBarStyle,
+        tabBarLabelStyle,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: "Trang chủ",
-          tabBarLabel: "Tổng quan",
+          tabBarLabel: "Home",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="view-dashboard"
-              size={size}
-              color={color}
-            />
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
 
-      {/* Trang Cài đặt */}
       <Tabs.Screen
-        name="settings"
+        name="voucher"
         options={{
-          title: "Cấu hình",
-          tabBarLabel: "Cài đặt",
+          title: "Voucher",
+          tabBarLabel: "Voucher",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-              name="cog-outline"
+              name="ticket-outline"
               size={size}
               color={color}
             />
@@ -106,7 +92,67 @@ export default function RootLayout() {
         }}
       />
 
-      {/* Ẩn trang onboarding khỏi thanh điều hướng (nếu nó nằm trong app/) */}
+      <Tabs.Screen
+        name="cart"
+        options={{
+          title: "Giỏ hàng",
+          tabBarLabel: "",
+          tabBarIcon: () => null,
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              onPress={props.onPress}
+              onLongPress={props.onLongPress ?? undefined}
+              accessibilityState={props.accessibilityState}
+              accessibilityLabel={props.accessibilityLabel}
+              testID={props.testID}
+              style={[props.style, styles.centerTabButtonWrapper]}
+              activeOpacity={0.9}
+            >
+              <View style={styles.centerTabButton}>
+                <MaterialCommunityIcons
+                  name="shopping-outline"
+                  size={28}
+                  color="#FFFFFF"
+                />
+              </View>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="review"
+        options={{
+          title: "Đánh giá",
+          tabBarLabel: "Review",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="message-outline"
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Hồ sơ",
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null,
+        }}
+      />
+
       <Tabs.Screen
         name="onboarding"
         options={{
@@ -117,12 +163,3 @@ export default function RootLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: "#0D0D12",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
