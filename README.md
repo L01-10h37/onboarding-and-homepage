@@ -48,3 +48,29 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Testing
+
+This project is configured with Jest for Expo.
+
+Run all tests:
+
+```bash
+npm test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+Run only onboarding test file:
+
+```bash
+npm test -- OnboardingScreen.test.tsx
+```
+
+Current onboarding test file:
+
+- `app/(tabs)/OnboardingScreen.test.tsx`
