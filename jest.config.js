@@ -7,7 +7,10 @@ module.exports = {
 
   collectCoverageFrom: ["app/(tabs)/index.tsx", "app/(tabs)/onboarding.tsx"],
 
-  testMatch: ["_test_/HomeScreen.test.tsx", "_test_/OnboardingScreen.test.tsx"],
+  testMatch: [
+    "<rootDir>/_test_/HomeScreen.test.tsx",
+    "<rootDir>/_test_/OnboardingScreen.test.tsx",
+  ],
 
   testPathIgnorePatterns: [
     "/node_modules/",
