@@ -5,7 +5,14 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/$1",
   },
 
-  collectCoverageFrom: ["app/(tabs)/index.tsx", "app/(tabs)/onboarding.tsx"],
+  collectCoverageFrom: [
+    "app/(tabs)/index.tsx",
+    "app/(tabs)/onboarding.tsx",
+    "assests/images/screen1.png",
+    "assests/images/screen2.png",
+    "assests/images/screen3.png",
+    "assests/images/screen4.png",
+  ],
 
   testPathIgnorePatterns: [
     "/node_modules/",
