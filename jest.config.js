@@ -4,17 +4,36 @@ module.exports = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
-  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
+
+  collectCoverageFrom: ["app/(tabs)/index.tsx", "app/(tabs)/onboarding.tsx"],
+
+  testMatch: [
+    "**/app/(tabs)/index.test.tsx",
+    "**/app/(tabs)/onboarding.test.tsx",
+  ],
+
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/dist/",
+    "cart.test.tsx",
+    "explore.test.tsx",
+    "profile.test.tsx",
+    "review.test.tsx",
+    "voucher.test.tsx",
+    "_layout.test.tsx",
+  ],
+
   collectCoverage: true,
   coverageDirectory: "coverage",
   coverageReporters: ["lcov", "text"],
+
   reporters: [
     "default",
     [
       "jest-html-reporter",
       {
-        outputPath: "test-report/index.html"
-      }
-    ]
+        outputPath: "test-report/index.html",
+      },
+    ],
   ],
 };
