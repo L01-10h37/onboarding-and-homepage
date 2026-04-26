@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   sonar:
@@ -21,20 +22,23 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # chạy test + tạo coverage
       - name: Run tests with coverage
         run: npm test -- --coverage --all
 
-      - name: Upload test report
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: test-report
+      #  debug xem có coverage không
+      - name: Check coverage file
+        run: ls -R coverage
 
+      #  SonarCloud scan (FIX CHÍNH)
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           args: >
             -Dsonar.projectKey=l01-10h37_onboarding-and-homescreen
             -Dsonar.organization=l01-10h37
+            -Dsonar.sources=app
+            -Dsonar.exclusions=**/node_modules/**,**/coverage/**,**/*.test.tsx
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
