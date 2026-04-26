@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+// import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 
-import OnboardingScreen from "./onboarding";
+import OnboardingScreen from "../app/(tabs)/onboarding";
 
 jest.mock("@expo/vector-icons", () => {
   const ReactLib = require("react");
