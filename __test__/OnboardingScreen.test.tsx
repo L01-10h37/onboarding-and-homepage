@@ -1,6 +1,5 @@
 // import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
-import React from "react";
 
 import OnboardingScreen from "../app/(tabs)/onboarding";
 
@@ -18,11 +17,14 @@ jest.mock("react-native-app-intro-slider", () => {
   const { View, TouchableOpacity, Text } = require("react-native");
 
   const goToSlideMock = jest.fn();
+  let attachRef = true;
 
   const MockSlider = ReactLib.forwardRef((props: any, ref: any) => {
-    ReactLib.useImperativeHandle(ref, () => ({
-      goToSlide: goToSlideMock,
-    }));
+    if (attachRef) {
+      ReactLib.useImperativeHandle(ref, () => ({
+        goToSlide: goToSlideMock,
+      }));
+    }
 
     return (
       <View>
@@ -42,6 +44,20 @@ jest.mock("react-native-app-intro-slider", () => {
           <Text>Set index last</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          testID="set-index-1"
+          onPress={() => props.onSlideChange?.(1)}
+        >
+          <Text>Set index 1</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          testID="trigger-slider-done"
+          onPress={() => props.onDone?.()}
+        >
+          <Text>Trigger slider done</Text>
+        </TouchableOpacity>
+
         {props.renderPagination?.()}
       </View>
     );
@@ -51,6 +67,9 @@ jest.mock("react-native-app-intro-slider", () => {
     __esModule: true,
     default: MockSlider,
     __goToSlideMock: goToSlideMock,
+    __setAttachRef: (value: boolean) => {
+      attachRef = value;
+    },
   };
 });
 
@@ -58,6 +77,7 @@ describe("OnboardingScreen", () => {
   const sliderModule = require("react-native-app-intro-slider");
 
   beforeEach(() => {
+    sliderModule.__setAttachRef(true);
     sliderModule.__goToSlideMock.mockClear();
   });
 
@@ -92,6 +112,20 @@ describe("OnboardingScreen", () => {
     expect(onDone).not.toHaveBeenCalled();
   });
 
+  it("goes to the correct next slide from a middle index", () => {
+    const onDone = jest.fn();
+    const { getByText, getByTestId } = render(
+      <OnboardingScreen onDone={onDone} />,
+    );
+
+    fireEvent.press(getByTestId("set-index-1"));
+    expect(getByText("arrow-forward")).toBeTruthy();
+    fireEvent.press(getByText("arrow-forward"));
+
+    expect(sliderModule.__goToSlideMock).toHaveBeenCalledWith(2, true);
+    expect(onDone).not.toHaveBeenCalled();
+  });
+
   it("calls onDone when pressing action button on last slide", () => {
     const onDone = jest.fn();
     const { getByText, getByTestId } = render(
@@ -102,5 +136,28 @@ describe("OnboardingScreen", () => {
     fireEvent.press(getByText("checkmark"));
 
     expect(onDone).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onDone from AppIntroSlider onDone prop", () => {
+    const onDone = jest.fn();
+    const { getByTestId } = render(<OnboardingScreen onDone={onDone} />);
+
+    fireEvent.press(getByTestId("trigger-slider-done"));
+
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not crash when ref is unavailable on non-last slide", () => {
+    sliderModule.__setAttachRef(false);
+    const onDone = jest.fn();
+    const { getByText, getByTestId } = render(
+      <OnboardingScreen onDone={onDone} />,
+    );
+
+    fireEvent.press(getByTestId("set-index-0"));
+    expect(() => fireEvent.press(getByText("arrow-forward"))).not.toThrow();
+
+    expect(sliderModule.__goToSlideMock).not.toHaveBeenCalled();
+    expect(onDone).not.toHaveBeenCalled();
   });
 });
